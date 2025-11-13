@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="pt" class="h-full dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin - TikTok Accounts</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Ícones -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Cropper.js -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css"
+    />
+
+    <script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              primary: "#FF0050",
+              secondary: "#00F2EA",
+            },
+          },
+        },
+      };
+    </script>
+  </head>
+  <body
+    class="bg-gray-50 dark:bg-gray-900 min-h-screen transition-colors duration-300"
+  >
+    <!-- Header Admin -->
+    <header
+      class="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700 sticky top-0 z-50"
+    >
+      <div class="container mx-auto px-4 py-4">
+        <div class="flex justify-between items-center">
+          <div class="flex items-center space-x-3">
+            <a
+              href="index.html"
+              class="w-10 h-10 bg-gradient-to-br from-primary to-secondary rounded-lg flex items-center justify-center"
+            >
+              <i class="fab fa-tiktok text-white text-lg"></i>
+            </a>
+            <div>
+              <h1 class="text-2xl font-bold text-gray-800 dark:text-white">
+                Painel Admin
+              </h1>
+              <p
+                id="adminSessionTimer"
+                class="text-sm text-gray-600 dark:text-gray-400"
+              >
+                Sessão expira em: 05:00
+              </p>
+            </div>
+          </div>
+
+          <div class="flex items-center space-x-4">
+            <button
+              id="themeToggle"
+              class="p-2 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+            >
+              <i class="fas fa-moon"></i>
+            </button>
+            <button
+              id="logoutAdmin"
+              class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg font-semibold transition-colors flex items-center space-x-2"
+            >
+              <i class="fas fa-sign-out-alt"></i>
+              <span>Sair</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div class="container mx-auto px-4 py-8">
+      <!-- Alertas -->
+      <div id="adminAlerts" class="mb-6"></div>
+
+      <!-- Dashboard Stats -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <!-- Total de Contas -->
+        <div
+          class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6"
+        >
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm font-medium text-gray-600 dark:text-gray-400">
+                Total de Contas
+              </p>
+              <p
+                id="totalAccounts"
+                class="text-3xl font-bold text-blue-600 dark:text-blue-400 mt-2"
+              >
+                0
+              </p>
+            </div>
+            <div class="p-3 bg-blue-100 dark:bg-blue-900 rounded-lg">
+              <svg
+                class="w-6 h-6 text-blue-600 dark:text-blue-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+                />
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- Contas Vendidas -->
+        <div
+          class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6"
+        >
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm font-medium text-gray-600 dark:text-gray-400">
+                Contas Vendidas
+              </p>
+              <p
+                id="soldAccounts"
+                class="text-3xl font-bold text-green-600 dark:text-green-400 mt-2"
+              >
+                0
+              </p>
+            </div>
+            <div class="p-3 bg-green-100 dark:bg-green-900 rounded-lg">
+              <svg
+                class="w-6 h-6 text-green-600 dark:text-green-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- Contas Disponíveis -->
+        <div
+          class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6"
+        >
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm font-medium text-gray-600 dark:text-gray-400">
+                Disponíveis
+              </p>
+              <p
+                id="availableAccounts"
+                class="text-3xl font-bold text-yellow-600 dark:text-yellow-400 mt-2"
+              >
+                0
+              </p>
+            </div>
+            <div class="p-3 bg-yellow-100 dark:bg-yellow-900 rounded-lg">
+              <svg
+                class="w-6 h-6 text-yellow-600 dark:text-yellow-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M5 13l4 4L19 7"
+                />
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- Total de Receita -->
+        <div
+          class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6"
+        >
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm font-medium text-gray-600 dark:text-gray-400">
+                Receita Total
+              </p>
+              <p
+                id="totalRevenue"
+                class="text-3xl font-bold text-purple-600 dark:text-purple-400 mt-2"
+              >
+                0 MT
+              </p>
+            </div>
+            <div class="p-3 bg-purple-100 dark:bg-purple-900 rounded-lg">
+              <svg
+                class="w-6 h-6 text-purple-600 dark:text-purple-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"
+                />
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Estatísticas de Visitas -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <!-- Visitas Hoje -->
+        <div
+          class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6"
+        >
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm font-medium text-gray-600 dark:text-gray-400">
+                Visitas Hoje
+              </p>
+              <p
+                id="visitsToday"
+                class="text-3xl font-bold text-blue-600 dark:text-blue-400 mt-2"
+              >
+                0
+              </p>
+            </div>
+            <div class="p-3 bg-blue-100 dark:bg-blue-900 rounded-lg">
+              <svg
+                class="w-6 h-6 text-blue-600 dark:text-blue-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                />
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                />
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- Visitas Esta Semana -->
+        <div
+          class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6"
+        >
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm font-medium text-gray-600 dark:text-gray-400">
+                Esta Semana
+              </p>
+              <p
+                id="visitsThisWeek"
+                class="text-3xl font-bold text-green-600 dark:text-green-400 mt-2"
+              >
+                0
+              </p>
+            </div>
+            <div class="p-3 bg-green-100 dark:bg-green-900 rounded-lg">
+              <svg
+                class="w-6 h-6 text-green-600 dark:text-green-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                />
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- Visitas Este Mês -->
+        <div
+          class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6"
+        >
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm font-medium text-gray-600 dark:text-gray-400">
+                Este Mês
+              </p>
+              <p
+                id="visitsThisMonth"
+                class="text-3xl font-bold text-purple-600 dark:text-purple-400 mt-2"
+              >
+                0
+              </p>
+            </div>
+            <div class="p-3 bg-purple-100 dark:bg-purple-900 rounded-lg">
+              <svg
+                class="w-6 h-6 text-purple-600 dark:text-purple-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                />
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- Total de Visitas -->
+        <div
+          class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6"
+        >
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm font-medium text-gray-600 dark:text-gray-400">
+                Total de Visitas
+              </p>
+              <p
+                id="totalVisits"
+                class="text-3xl font-bold text-orange-600 dark:text-orange-400 mt-2"
+              >
+                0
+              </p>
+            </div>
+            <div class="p-3 bg-orange-100 dark:bg-orange-900 rounded-lg">
+              <svg
+                class="w-6 h-6 text-orange-600 dark:text-orange-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+                />
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Gráficos -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+        <!-- Gráfico de Status -->
+        <div
+          class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6"
+        >
+          <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+            Status das Contas
+          </h3>
+          <div class="h-64">
+            <canvas id="statusChart"></canvas>
+          </div>
+        </div>
+
+        <!-- Gráfico de Visitas -->
+        <div
+          class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6"
+        >
+          <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+            Visitas dos Últimos 7 Dias
+          </h3>
+          <div class="h-64">
+            <canvas id="visitsChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Formulário de Conta -->
+      <div
+        class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 mb-8"
+      >
+        <h2
+          class="text-xl font-bold text-gray-900 dark:text-white mb-6"
+          id="formTitle"
+        >
+          <i class="fas fa-plus-circle mr-2 text-primary"></i>
+          Adicionar Nova Conta
+        </h2>
+
+        <form id="accountForm" class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <!-- Coluna 1 -->
+          <div class="space-y-6">
+            <!-- Título -->
+            <div>
+              <label
+                class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+              >
+                <i class="fas fa-heading mr-2 text-primary"></i>
+                Título da Conta *
+              </label>
+              <input
+                type="text"
+                id="accountTitle"
+                required
+                placeholder="Ex: Conta TikTok Premium 50K"
+                class="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary transition-all duration-200"
+              />
+            </div>
+
+            <!-- Preço -->
+            <div>
+              <label
+                class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+              >
+                <i class="fas fa-tag mr-2 text-green-500"></i>
+                Preço (MT) *
+              </label>
+              <input
+                type="number"
+                id="accountPrice"
+                min="0"
+                step="0.01"
+                required
+                placeholder="Ex: 1500.00"
+                class="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary transition-all duration-200"
+              />
+            </div>
+
+            <!-- Seguidores -->
+            <div>
+              <label
+                class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+              >
+                <i class="fas fa-users mr-2 text-blue-500"></i>
+                Seguidores *
+              </label>
+              <input
+                type="number"
+                id="accountFollowers"
+                min="0"
+                required
+                placeholder="Ex: 50000"
+                class="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary transition-all duration-200"
+              />
+            </div>
+
+            <!-- Visualizações -->
+            <div>
+              <label
+                class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+              >
+                <i class="fas fa-eye mr-2 text-purple-500"></i>
+                Visualizações da Conta
+              </label>
+              <input
+                type="number"
+                id="accountViews"
+                min="0"
+                placeholder="Ex: 1000000"
+                class="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary transition-all duration-200"
+              />
+            </div>
+          </div>
+
+          <!-- Coluna 2 -->
+          <div class="space-y-6">
+            <!-- Status -->
+            <div>
+              <label
+                class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+              >
+                <i class="fas fa-circle mr-2 text-yellow-500"></i>
+                Status
+              </label>
+              <select
+                id="accountStatus"
+                class="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary transition-all duration-200"
+              >
+                <option value="available">🟢 Disponível</option>
+                <option value="reserved">🟡 Reservada</option>
+                <option value="sold">🔴 Vendida</option>
+              </select>
+            </div>
+
+            <!-- Descrição -->
+            <div>
+              <label
+                class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+              >
+                <i class="fas fa-file-alt mr-2 text-gray-500"></i>
+                Descrição
+              </label>
+              <textarea
+                id="accountDescription"
+                rows="4"
+                placeholder="Descreva os detalhes da conta, conteúdo, engajamento, etc..."
+                class="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary transition-all duration-200 resize-none"
+              ></textarea>
+            </div>
+
+            <!-- WhatsApp -->
+            <div>
+              <label
+                class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+              >
+                <i class="fab fa-whatsapp mr-2 text-green-500"></i>
+                Número WhatsApp
+              </label>
+              <input
+                type="tel"
+                id="accountWhatsApp"
+                placeholder="258841234567"
+                class="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary transition-all duration-200"
+              />
+            </div>
+
+            <!-- Estatísticas -->
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label
+                  class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+                >
+                  <i class="fas fa-heart mr-2 text-red-500"></i>
+                  Curtidas
+                </label>
+                <input
+                  type="number"
+                  id="accountLikes"
+                  min="0"
+                  placeholder="Ex: 5000"
+                  class="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary transition-all duration-200"
+                />
+              </div>
+              <div>
+                <label
+                  class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+                >
+                  <i class="fas fa-video mr-2 text-purple-500"></i>
+                  Vídeos
+                </label>
+                <input
+                  type="number"
+                  id="accountVideos"
+                  min="0"
+                  placeholder="Ex: 150"
+                  class="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary transition-all duration-200"
+                />
+              </div>
+            </div>
+          </div>
+
+          <!-- Uploads -->
+          <div class="lg:col-span-2 space-y-6">
+            <!-- Banner Principal -->
+            <div>
+              <label
+                class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+              >
+                <i class="fas fa-image mr-2 text-primary"></i>
+                Banner Principal
+              </label>
+              <div
+                class="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-6 text-center transition-all duration-200 hover:border-primary hover:bg-primary/5"
+              >
+                <div id="bannerPreview" class="mb-4 max-w-md mx-auto">
+                  <!-- Preview será injetado aqui -->
+                </div>
+                <input
+                  type="file"
+                  id="accountBanner"
+                  accept="image/*"
+                  class="hidden"
+                />
+                <button
+                  type="button"
+                  id="bannerUploadBtn"
+                  class="bg-primary hover:bg-red-600 text-white px-6 py-3 rounded-lg font-semibold transition-all duration-200 flex items-center space-x-2 mx-auto"
+                >
+                  <i class="fas fa-upload"></i>
+                  <span>Escolher Banner</span>
+                </button>
+                <p class="text-sm text-gray-500 dark:text-gray-400 mt-2">
+                  📷 Recomendado: 800x400px (2:1) • Formatos: JPG, PNG, WebP
+                </p>
+              </div>
+            </div>
+
+            <!-- Fotos Adicionais -->
+            <div>
+              <label
+                class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+              >
+                <i class="fas fa-images mr-2 text-blue-500"></i>
+                Fotos Adicionais (máx. 4)
+              </label>
+              <div
+                class="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-6 transition-all duration-200 hover:border-blue-500 hover:bg-blue-500/5"
+              >
+                <div
+                  id="photosPreview"
+                  class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4"
+                >
+                  <!-- Previews serão injetados aqui -->
+                </div>
+                <input
+                  type="file"
+                  id="accountPhotos"
+                  accept="image/*"
+                  multiple
+                  class="hidden"
+                />
+                <button
+                  type="button"
+                  id="photosUploadBtn"
+                  class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold transition-all duration-200 flex items-center space-x-2"
+                >
+                  <i class="fas fa-plus"></i>
+                  <span>Adicionar Fotos</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Actions -->
+          <div
+            class="lg:col-span-2 flex justify-end space-x-4 pt-6 border-t border-gray-200 dark:border-gray-700"
+          >
+            <button
+              type="button"
+              id="cancelEdit"
+              class="hidden px-6 py-3 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors font-semibold border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700"
+            >
+              <i class="fas fa-times mr-2"></i>
+              Cancelar Edição
+            </button>
+            <button
+              type="submit"
+              id="submitAccount"
+              class="bg-primary hover:bg-red-600 text-white px-8 py-3 rounded-lg font-semibold transition-all duration-200 flex items-center space-x-2 shadow-lg hover:shadow-xl"
+            >
+              <i class="fas fa-save"></i>
+              <span>Salvar Conta</span>
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Lista de Contas -->
+      <div
+        class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden"
+      >
+        <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+          <h2
+            class="text-xl font-bold text-gray-900 dark:text-white flex items-center"
+          >
+            <i class="fas fa-list mr-2 text-primary"></i>
+            Contas Cadastradas
+          </h2>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full">
+            <thead class="bg-gray-50 dark:bg-gray-700">
+              <tr>
+                <th
+                  class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"
+                >
+                  Conta
+                </th>
+                <th
+                  class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"
+                >
+                  Status
+                </th>
+                <th
+                  class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"
+                >
+                  Seguidores
+                </th>
+                <th
+                  class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"
+                >
+                  Visualizações
+                </th>
+                <th
+                  class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"
+                >
+                  Preço
+                </th>
+                <th
+                  class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"
+                >
+                  Data
+                </th>
+                <th
+                  class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"
+                >
+                  Ações
+                </th>
+              </tr>
+            </thead>
+            <tbody
+              id="adminAccountsList"
+              class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700"
+            >
+              <!-- Dados serão injetados via JavaScript -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Crop -->
+    <div
+      id="cropModal"
+      class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden items-center justify-center p-4"
+    >
+      <div class="bg-white dark:bg-gray-800 rounded-xl max-w-2xl w-full p-6">
+        <h3
+          class="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center"
+        >
+          <i class="fas fa-crop mr-2 text-primary"></i>
+          Ajustar Banner
+        </h3>
+        <div class="mb-4">
+          <img id="cropImage" class="max-w-full max-h-96" />
+        </div>
+        <div class="flex justify-end space-x-3">
+          <button
+            id="cancelCrop"
+            class="px-4 py-2 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors border border-gray-300 dark:border-gray-600 rounded-lg"
+          >
+            Cancelar
+          </button>
+          <button
+            id="confirmCrop"
+            class="bg-primary hover:bg-red-600 text-white px-6 py-2 rounded-lg font-semibold transition-colors"
+          >
+            Aplicar
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+    <script type="module" src="./js/firebase-config.js"></script>
+    <script type="module" src="./js/utils.js"></script>
+    <script type="module" src="./js/admin.js"></script>
+  </body>
+</html>

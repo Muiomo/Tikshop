@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="pt" class="h-full dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TikTok Accounts - Loja de Contas</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Ícones -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+
+    <!-- Estilos -->
+    <link rel="stylesheet" href="./css/cropper.css" />
+    <link rel="stylesheet" href="./css/style.css" />
+
+    <!-- Configuração Tailwind -->
+    <script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              primary: "#FF0050",
+              secondary: "#00F2EA",
+              dark: {
+                50: "#f8fafc",
+                100: "#f1f5f9",
+                200: "#e2e8f0",
+                300: "#cbd5e1",
+                400: "#94a3b8",
+                500: "#64748b",
+                600: "#475569",
+                700: "#334155",
+                800: "#1e293b",
+                900: "#0f172a",
+              },
+            },
+            height: {
+              card: "320px",
+              banner: "160px",
+            },
+          },
+        },
+      };
+    </script>
+  </head>
+  <body
+    class="bg-gray-50 dark:bg-gray-900 min-h-screen transition-colors duration-300"
+  >
+    <!-- Header -->
+    <header
+      class="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700 sticky top-0 z-50"
+    >
+      <div class="container mx-auto px-4 py-4">
+        <div class="flex justify-between items-center">
+          <!-- Logo -->
+          <div class="flex items-center space-x-3">
+            <div
+              class="w-10 h-10 bg-gradient-to-br from-primary to-secondary rounded-lg flex items-center justify-center"
+            >
+              <i class="fab fa-tiktok text-white text-lg"></i>
+            </div>
+            <h1 class="text-2xl font-bold text-gray-800 dark:text-white">
+              TikShop
+            </h1>
+          </div>
+
+          <!-- Controles -->
+          <div class="flex items-center space-x-4">
+            <!-- Toggle Tema -->
+            <button
+              id="themeToggle"
+              class="p-2 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+            >
+              <i class="fas fa-moon"></i>
+            </button>
+
+            <!-- Botão Admin -->
+            <button
+              id="adminBtn"
+              class="bg-primary hover:bg-red-600 text-white px-4 py-2 rounded-lg font-semibold transition-colors flex items-center space-x-2"
+            >
+              <i class="fas fa-lock"></i>
+              <span>Admin</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Filtros -->
+    <section
+      id="filtersSection"
+      class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 py-4"
+    >
+      <div class="container mx-auto px-4">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <!-- Status -->
+          <div>
+            <label
+              class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+              >Status</label
+            >
+            <select
+              id="statusFilter"
+              class="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
+            >
+              <option value="all">Todos</option>
+              <option value="available">Disponível</option>
+              <option value="reserved">Reservada</option>
+              <option value="sold">Vendida</option>
+            </select>
+          </div>
+
+          <!-- Ordenar -->
+          <div>
+            <label
+              class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+              >Ordenar por</label
+            >
+            <select
+              id="sortFilter"
+              class="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
+            >
+              <option value="newest">Mais Recentes</option>
+              <option value="oldest">Mais Antigas</option>
+              <option value="price_asc">Preço (Menor)</option>
+              <option value="price_desc">Preço (Maior)</option>
+              <option value="followers_asc">Seguidores (Menor)</option>
+              <option value="followers_desc">Seguidores (Maior)</option>
+            </select>
+          </div>
+
+          <!-- Preço -->
+          <div>
+            <label
+              class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+              >Preço Máximo</label
+            >
+            <input
+              type="number"
+              id="priceFilter"
+              placeholder="Qualquer preço"
+              class="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
+            />
+          </div>
+
+          <!-- Seguidores -->
+          <div>
+            <label
+              class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+              >Mín. Seguidores</label
+            >
+            <input
+              type="number"
+              id="followersFilter"
+              placeholder="Qualquer quantidade"
+              class="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
+            />
+          </div>
+        </div>
+
+        <!-- Aplicar Filtros -->
+        <div class="flex justify-end mt-4">
+          <button
+            id="applyFilters"
+            class="bg-primary hover:bg-red-600 text-white px-6 py-2 rounded-lg font-semibold transition-colors"
+          >
+            Aplicar Filtros
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Grid de Contas -->
+    <main class="container mx-auto px-4 py-8">
+      <div
+        id="accountsGrid"
+        class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+      >
+        <!-- Cards serão renderizados aqui via JavaScript -->
+        <div class="col-span-full text-center py-12">
+          <div
+            class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"
+          ></div>
+          <p class="text-gray-600 dark:text-gray-400">Carregando contas...</p>
+        </div>
+      </div>
+
+      <!-- Sem resultados -->
+      <div id="noResults" class="hidden text-center py-12">
+        <i class="fas fa-search text-4xl text-gray-400 mb-4"></i>
+        <h3 class="text-xl font-semibold text-gray-600 dark:text-gray-400 mb-2">
+          Nenhuma conta encontrada
+        </h3>
+        <p class="text-gray-500 dark:text-gray-500">
+          Tente ajustar os filtros ou verificar novamente mais tarde.
+        </p>
+      </div>
+    </main>
+
+    <!-- Modal de Detalhes -->
+    <div
+      id="accountModal"
+      class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden items-center justify-center p-4"
+    >
+      <div
+        class="bg-white dark:bg-gray-800 rounded-xl max-w-4xl w-full max-h-[90vh] overflow-hidden"
+      >
+        <!-- Conteúdo será injetado via JavaScript -->
+      </div>
+    </div>
+
+    <!-- Modal Login Admin -->
+    <div
+      id="adminLoginModal"
+      class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden items-center justify-center p-4"
+    >
+      <div class="bg-white dark:bg-gray-800 rounded-xl max-w-md w-full p-6">
+        <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">
+          Acesso Administrativo
+        </h3>
+        <input
+          type="password"
+          id="adminPassword"
+          placeholder="Senha de administrador"
+          class="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white px-3 py-3 mb-4 focus:outline-none focus:ring-2 focus:ring-primary"
+        />
+        <div class="flex justify-end space-x-3">
+          <button
+            id="cancelAdminLogin"
+            class="px-4 py-2 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors"
+          >
+            Cancelar
+          </button>
+          <button
+            id="confirmAdminLogin"
+            class="bg-primary hover:bg-red-600 text-white px-6 py-2 rounded-lg font-semibold transition-colors"
+          >
+            Entrar
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scripts -->
+    <script type="module" src="./js/firebase-config.js"></script>
+    <script type="module" src="./js/utils.js"></script>
+    <script type="module" src="./js/modal.js"></script>
+    <script type="module" src="./js/app.js"></script>
+  </body>
+</html>

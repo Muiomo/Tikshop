@@ -1,0 +1,29 @@
+tiktok-shop/
+│
+├── index.html                      # Página principal
+├── admin.html                      # Painel administrativo
+├── firebase.json                   # Config Firebase
+├── .env.example                    # Variáveis de ambiente
+│
+├── css/
+│   ├── style.css                   # Estilos principais
+│   ├── admin.css                   # Estilos do admin
+│   └── cropper.css                 # Estilos do cropper
+│
+├── js/
+│   ├── firebase-config.js          # Configuração Firebase
+│   ├── app.js                      # Aplicação principal
+│   ├── admin.js                    # Painel administrativo
+│   ├── modal.js                    # Modal de detalhes
+│   ├── utils.js                    # Utilitários
+│   └── cropper.js                  # Crop de imagens
+│
+├── assets/
+│   ├── images/
+│   │   └── default-banner.svg      # Banner padrão
+│   └── icons/                      # Ícones SVG
+│
+└── functions/
+    ├── index.js                    # Cloud Functions
+    ├── package.json
+    └── .eslintrc.js
